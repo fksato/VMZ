@@ -20,7 +20,8 @@ from __future__ import unicode_literals
 import logging
 
 import numpy as np
-import cPickle as pickle
+# import cPickle as pickle
+import pickle as pickle
 from collections import OrderedDict
 
 from caffe2.python import core, workspace, scope
