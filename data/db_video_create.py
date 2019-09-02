@@ -97,10 +97,9 @@ def create_video_db(
 
                 if use_video_id:
                     video_id = row["video_id"]
-                    video_id = video_id.encode()
                     video_id_tensor = tensor_protos.protos.add()
-                    video_id_tensor.data_type = 4  # 10 # int64
-                    video_id_tensor.string_data.append(video_id)
+                    video_id_tensor.data_type = 10  # int64
+                    video_id_tensor.int64_data.append(video_id)
 
                 txn.put(
                     '{}'.format(index).encode('ascii'),
