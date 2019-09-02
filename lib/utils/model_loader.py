@@ -138,7 +138,7 @@ def LoadModelFromPickleFile(
 ):
 
     ws_blobs = workspace.Blobs()
-    with open(pkl_file, 'r') as fopen:
+    with open(pkl_file, 'rb') as fopen:
         blobs = pickle.load(fopen, encoding='latin1')
 
     if 'blobs' in blobs:
