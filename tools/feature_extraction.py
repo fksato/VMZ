@@ -44,7 +44,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
                         , crop_size=112, video_res_type=0, num_decode_threads=4, multi_label=0
                         , num_labels=101, input_type=0, clip_length_of=8, sampling_rate_of=2
                         , frame_gap_of=2, do_flow_aggregation=0, flow_data_type=0
-                        , get_video_id=1, get_start_frame=0, use_local_file=0, crop_per_clip=1
+                        , get_video_id=1, get_start_frame=0, use_local_file=1, crop_per_clip=1
                         , db_type='pickle' , model_name='r2plus1d', model_depth=18
                         , num_channels=3, output_path=None
                         , use_cudnn=1, layers='final_avg', num_iterations=1, channel_multiplier=1.0
@@ -97,7 +97,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
 
     if gpu_list is None:
         if num_gpus == 0:
-            raise Exception('Must soecfy GPUs')
+            raise Exception('Must specify GPUs')
         else:
             gpus = [i for i in range(num_gpus)]
     else:
