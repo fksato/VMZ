@@ -262,7 +262,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
         if num_gpus > 0:
             examples_per_iteration = batch_size * num_gpus
         else:
-            examples_per_iteration = args.batch_size
+            examples_per_iteration = batch_size
         num_iterations = int(num_examples / examples_per_iteration)
 
     activations = fetchActivations(model, layers, num_iterations)
@@ -278,7 +278,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
 
     if output_path:
         log.info('Writing to {}'.format(output_path))
-        if args.save_h5:
+        if save_h5:
             with h5py.File(output_path, 'w') as handle:
                 for name, activation in activations.items():
                     handle.create_dataset(name, data=activation)
