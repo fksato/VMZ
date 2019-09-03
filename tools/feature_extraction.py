@@ -48,7 +48,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
                         , db_type='pickle' , model_name='r2plus1d', model_depth=18
                         , num_channels=3, output_path=None
                         , use_cudnn=1, layers='final_avg', num_iterations=1, channel_multiplier=1.0
-                        , bottleneck_multiplier=1.0, use_pool1=0, use_convolutional_pred=0, use_dropout=0, *args, **kwargs):
+                        , bottleneck_multiplier=1.0, use_pool1=0, use_convolutional_pred=0, use_dropout=0, **kwargs):
     """
     :param gpu_list: list of gpu ids to use
     :param batch_size: batch size
@@ -250,6 +250,10 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
     # outputs = [name.strip() for name in layers.split(',')]
     if not isinstance(layers, list):
         layers = [layers]
+
+    if 'video_id' not in layers:
+        layers.append(video_id)
+        
     assert len(layers) > 0
 
     if num_iterations > 0:
