@@ -256,14 +256,14 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
 
     assert len(layers) > 0
 
-    if num_iterations > 0:
-        num_iterations = num_iterations
-    else:
-        if num_gpus > 0:
-            examples_per_iteration = batch_size * num_gpus
-        else:
-            examples_per_iteration = batch_size
-        num_iterations = int(num_examples / examples_per_iteration)
+    # if num_iterations > 0:
+    #     num_iterations = num_iterations
+    # else:
+        # if num_gpus > 0:
+        # else:
+        #     examples_per_iteration = batch_size
+    examples_per_iteration = batch_size * num_gpus
+    num_iterations = int(num_examples / examples_per_iteration)
 
     print(f'NUM OF EXAMPLES {num_examples}')
     print(f'BATCH {batch_size}, EXAMPLES: {examples_per_iteration}')
