@@ -39,19 +39,67 @@ logging.basicConfig()
 log = logging.getLogger("feature_extractor")
 log.setLevel(logging.INFO)
 
+def feature_extractor(load_model_path, test_data, gpu_list=None, num_gpus=0, batch_size=4, clip_per_video=1, decode_type=2
+                        , clip_length_rgb=4, sampling_rate_rgb=1, scale_h=128, scale_w=171
+                        , crop_size=112, video_res_type=0, num_decode_threads=4, multi_label=0
+                        , num_labels=101, input_type=0, clip_length_of=8, sampling_rate_of=2
+                        , frame_gap_of=2, do_flow_aggregation=0, flow_data_type=0
+                        , get_video_id=1, get_start_frame=0, use_local_file=0, crop_per_clip=1
+                        , db_type='pickle' , model_name='r2plus1d', model_depth=18
+                        , num_channels=3, output_path=None
+                        , use_cudnn=1, layers='final_avg', num_iterations=1, channel_multiplier=1.0
+                        , bottleneck_multiplier=1.0, use_pool1=0, use_convolutional_pred=0, use_dropout=0, *args, **kwargs):
+    """
+    :param gpu_list: list of gpu ids to use
+    :param batch_size: batch size
+    :param clip_per_video: When clips_per_video > 1, sample this many clips uniformly in time
+    :param decode_type: 0: random, 1: uniform sampling, 2: use starting frame
+    :param clip_length_rgb: Length of input clips
+    :param sampling_rate_rgb: Frame sampling rate
+    :param scale_h: Scale image height to
+    :param scale_w: Scale image width to
+    :param crop_size: Input image size (to crop to)
+    :param video_res_type: Video frame scaling option, 0: scaled by height x width; 1: scaled by short edge
+    :param num_decode_threads: number of decoding threads
+    :param multi_label: Multiple label csv file input
+    :param num_labels: Number of labels
+    :param input_type: 0=rgb, 1=optical flow
+    :param clip_length_of: Frames of optical flow data
+    :param sampling_rate_of: Sampling rate for optial flows
+    :param frame_gap_of: Frame gap of optical flows
+    :param do_flow_aggregation: whether to aggregate optical flow across multiple frames
+    :param flow_data_type: 0=Flow2C, 1=Flow3C, 2=FlowWithGray, 3=FlowWithRGB
+    :param get_video_id: Output video id
+    :param get_start_frame: Output clip start frame
+    :param use_local_file: use local file
+    :param crop_per_clip: number of spatial crops per clip
+    :param db_type: Db type of the testing model
+    :param model_name: Model name
+    :param model_depth: Model depth
+    :param num_channels: Number of channels
+    :param load_model_path: Load saved model for testing
+    :param test_data: Path to output pickle; defaults to layers.pickle next to <test_data>
+    :param output_path: Path to output pickle; defaults to layers.pickle next to <test_data>
+    :param use_cudnn: Use CuDNN
+    :param layers: Comma-separated list of blob names to fetch
+    :param num_iterations: Run only this many iterations
+    :param channel_multiplier: Channel multiplier
+    :param bottleneck_multiplier: Bottleneck multiplier
+    :param use_pool1: use pool1 layer
+    :param use_convolutional_pred: using convolutional predictions
+    :param use_dropout: Use dropout at the prediction layer
+    """
+    # Initialize Caffe2
+    workspace.GlobalInit(['caffe2', '--caffe2_log_level=2'])
 
-def ExtractFeatures(args):
-    if args.gpus is not None:
-        gpus = [int(x) for x in args.gpus.split(',')]
+    if gpu_list is None:
+        if num_gpus == 0:
+            raise Exception('Must soecfy GPUs')
+        else:
+            gpus = [i for i in range(num_gpus)]
+    else:
+        gpus = [int(x) for x in gpu_list.split(',')]   
         num_gpus = len(gpus)
-    else:
-        gpus = range(args.num_gpus)
-        num_gpus = args.num_gpus
-
-    if num_gpus > 0:
-        log.info("Running on GPUs: {}".format(gpus))
-    else:
-        log.info("Running on CPU")
 
     my_arg_scope = {
         'order': 'NCHW',
@@ -60,43 +108,43 @@ def ExtractFeatures(args):
     }
 
     model = cnn.CNNModelHelper(
-        name="Extract Features",
+        name="Extract features",
         **my_arg_scope
     )
 
     video_input_args = dict(
-        batch_size=args.batch_size,
-        clip_per_video=args.clip_per_video,
-        decode_type=args.decode_type,
-        length_rgb=args.clip_length_rgb,
-        sampling_rate_rgb=args.sampling_rate_rgb,
-        scale_h=args.scale_h,
-        scale_w=args.scale_w,
-        crop_size=args.crop_size,
-        video_res_type=args.video_res_type,
-        short_edge=min(args.scale_h, args.scale_w),
-        num_decode_threads=args.num_decode_threads,
-        do_multi_label=args.multi_label,
-        num_of_class=args.num_labels,
+        batch_size=batch_size,
+        clip_per_video=clip_per_video,
+        decode_type=decode_type,
+        length_rgb=clip_length_rgb,
+        sampling_rate_rgb=sampling_rate_rgb,
+        scale_h=scale_h,
+        scale_w=scale_w,
+        crop_size=crop_size,
+        video_res_type=video_res_type,
+        short_edge=min(scale_h, scale_w),
+        num_decode_threads=num_decode_threads,
+        do_multi_label=multi_label,
+        num_of_class=num_labels,
         random_mirror=False,
         random_crop=False,
-        input_type=args.input_type,
-        length_of=args.clip_length_of,
-        sampling_rate_of=args.sampling_rate_of,
-        frame_gap_of=args.frame_gap_of,
-        do_flow_aggregation=args.do_flow_aggregation,
-        flow_data_type=args.flow_data_type,
-        get_rgb=args.input_type == 0,
-        get_optical_flow=args.input_type == 1,
-        get_video_id=args.get_video_id,
-        get_start_frame=args.get_start_frame,
-        use_local_file=args.use_local_file,
-        crop_per_clip=args.crop_per_clip,
+        input_type=input_type,
+        length_of=clip_length_of,
+        sampling_rate_of=sampling_rate_of,
+        frame_gap_of=frame_gap_of,
+        do_flow_aggregation=do_flow_aggregation,
+        flow_data_type=flow_data_type,
+        get_rgb=input_type == 0,
+        get_optical_flow=input_type == 1,
+        get_video_id=get_video_id,
+        get_start_frame=get_start_frame,
+        use_local_file=use_local_file,
+        crop_per_clip=crop_per_clip,
     )
 
     reader_args = dict(
         name="extract_features" + '_reader',
-        input_data=args.test_data,
+        input_data=test_data,
     )
 
     reader, num_examples = reader_utils.create_data_reader(
@@ -113,24 +161,24 @@ def ExtractFeatures(args):
     def create_model_ops(model, loss_scale):
         return model_builder.build_model(
             model=model,
-            model_name=args.model_name,
-            model_depth=args.model_depth,
-            num_labels=args.num_labels,
-            batch_size=args.batch_size,
-            num_channels=args.num_channels,
-            crop_size=args.crop_size,
+            model_name=model_name,
+            model_depth=model_depth,
+            num_labels=num_labels,
+            batch_size=batch_size,
+            num_channels=num_channels,
+            crop_size=crop_size,
             clip_length=(
-                args.clip_length_of if args.input_type == 1
-                else args.clip_length_rgb
+                clip_length_of if input_type == 1
+                else clip_length_rgb
             ),
             loss_scale=loss_scale,
             is_test=1,
-            multi_label=args.multi_label,
-            channel_multiplier=args.channel_multiplier,
-            bottleneck_multiplier=args.bottleneck_multiplier,
-            use_dropout=args.use_dropout,
-            use_convolutional_pred=args.use_convolutional_pred,
-            use_pool1=args.use_pool1,
+            multi_label=multi_label,
+            channel_multiplier=channel_multiplier,
+            bottleneck_multiplier=bottleneck_multiplier,
+            use_dropout=use_dropout,
+            use_convolutional_pred=use_convolutional_pred,
+            use_pool1=use_pool1,
         )
 
     if num_gpus > 0:
@@ -158,16 +206,16 @@ def ExtractFeatures(args):
     workspace.RunNetOnce(model.param_init_net)
     workspace.CreateNet(model.net)
 
-    if args.db_type == 'pickle':
-        model_loader.LoadModelFromPickleFile(model, args.load_model_path)
-    elif args.db_type == 'minidb':
+    if db_type == 'pickle':
+        model_loader.LoadModelFromPickleFile(model, load_model_path)
+    elif db_type == 'minidb':
         if num_gpus > 0:
-            model_helper.LoadModel(args.load_model_path, args.db_type)
+            model_helper.LoadModel(load_model_path, db_type)
         else:
             with core.DeviceScope(core.DeviceOption(caffe2_pb2.CPU, 0)):
-                model_helper.LoadModel(args.load_model_path, args.db_type)
+                model_helper.LoadModel(load_model_path, db_type)
     else:
-        log.warning("Unsupported db_type: {}".format(args.db_type))
+        log.warning("Unsupported db_type: {}".format(db_type))
 
     data_parallel_model.FinalizeAfterCheckpoint(model)
 
@@ -188,9 +236,6 @@ def ExtractFeatures(args):
                         all_activations[output_name] = []
                     all_activations[output_name].append(activations)
 
-            if counter % 20 == 0:
-                log.info('{}/{} iterations'.format(counter, num_iterations))
-
         # each key holds a list of activations obtained from each minibatch.
         # we now concatenate these lists to get the final arrays.
         # concatenating during the loop requires a realloc and can get slow.
@@ -199,177 +244,39 @@ def ExtractFeatures(args):
 
         return all_activations
 
-    outputs = [name.strip() for name in args.features.split(',')]
-    assert len(outputs) > 0
+    # outputs = [name.strip() for name in layers.split(',')]
+    if not isinstance(layers, list):
+        layers = [layers]
+    assert len(layers) > 0
 
-    if args.num_iterations > 0:
-        num_iterations = args.num_iterations
+    if num_iterations > 0:
+        num_iterations = num_iterations
     else:
         if num_gpus > 0:
-            examples_per_iteration = args.batch_size * num_gpus
+            examples_per_iteration = batch_size * num_gpus
         else:
             examples_per_iteration = args.batch_size
         num_iterations = int(num_examples / examples_per_iteration)
 
-    activations = fetchActivations(model, outputs, num_iterations)
+    activations = fetchActivations(model, layers, num_iterations)
 
-    # saving extracted features
-    for index in range(len(outputs)):
+    # saving extracted layers
+    for index in range(len(layers)):
         log.info(
             "Read '{}' with shape {}".format(
-                outputs[index],
-                activations[outputs[index]].shape
+                layers[index],
+                activations[layers[index]].shape
             )
         )
 
-    if args.output_path:
-        output_path = args.output_path
+    if output_path:
+        log.info('Writing to {}'.format(output_path))
+        if args.save_h5:
+            with h5py.File(output_path, 'w') as handle:
+                for name, activation in activations.items():
+                    handle.create_dataset(name, data=activation)
+        else:
+            with open(output_path, 'wb') as handle:
+                pickle.dump(activations, handle)
     else:
         return activations
-        # output_path = os.path.dirname(args.test_data) + '/features.pickle'
-
-    log.info('Writing to {}'.format(output_path))
-    if args.save_h5:
-        with h5py.File(output_path, 'w') as handle:
-            for name, activation in activations.items():
-                handle.create_dataset(name, data=activation)
-    else:
-        with open(output_path, 'wb') as handle:
-            pickle.dump(activations, handle)
-
-    # return activations
-
-    # perform sanity check
-    # if args.sanity_check == 1:  # check clip accuracy
-    #     assert args.multi_label == 0
-    #     clip_acc = 0
-    #     softmax = activations['softmax']
-    #     label = activations['label']
-    #     for i in range(len(softmax)):
-    #         sorted_preds = \
-    #             np.argsort(softmax[i])
-    #         sorted_preds[:] = sorted_preds[::-1]
-    #         if sorted_preds[0] == label[i]:
-    #             clip_acc += 1
-    #     log.info('Sanity check --- clip accuracy: {}'.format(
-    #         clip_acc / len(softmax))
-    #     )
-    # elif args.sanity_check == 2:  # check auc
-    #     assert args.multi_label == 1
-    #     prob = activations['prob']
-    #     label = activations['label']
-    #     mean_auc, mean_ap, mean_wap, _ = metric.mean_ap_metric(prob, label)
-    #     log.info('Sanity check --- AUC: {}, mAP: {}, mWAP: {}'.format(
-    #         mean_auc, mean_ap, mean_wap)
-    #     )
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Simple feature extraction"
-    )
-    parser.add_argument("--db_type", type=str, default='pickle',
-                        help="Db type of the testing model")
-    parser.add_argument("--model_name", type=str, default='r2plus1d',
-                        help="Model name")
-    parser.add_argument("--model_depth", type=int, default=18,
-                        help="Model depth")
-    parser.add_argument("--gpus", type=str, default=None,
-                        help="Comma separated list of GPU devices to use")
-    parser.add_argument("--num_gpus", type=int, default=1,
-                        help="Number of GPU devices (instead of --gpus)")
-    parser.add_argument("--scale_h", type=int, default=128,
-                        help="Scale image height to")
-    parser.add_argument("--scale_w", type=int, default=171,
-                        help="Scale image width to")
-    parser.add_argument("--crop_size", type=int, default=112,
-                        help="Input image size (to crop to)")
-    parser.add_argument("--clip_length_rgb", type=int, default=4,
-                        help="Length of input clips")
-    parser.add_argument("--sampling_rate_rgb", type=int, default=1,
-                        help="Frame sampling rate")
-    parser.add_argument("--num_labels", type=int, default=101,
-                        help="Number of labels")
-    parser.add_argument("--num_channels", type=int, default=3,
-                        help="Number of channels")
-    parser.add_argument("--batch_size", type=int, default=32,
-                        help="Batch size, per-GPU")
-    parser.add_argument("--load_model_path", type=str, default='',
-                        required=True,
-                        help="Load saved model for testing")
-    parser.add_argument("--test_data", type=str, default="", required=True,
-                        help="Dataset on which we will extract features")
-    parser.add_argument("--output_path", type=str, default="",
-                        help="Path to output pickle; defaults to "
-                        + "features.pickle next to <test_data>")
-    parser.add_argument("--use_cudnn", type=int, default=1,
-                        help="Use CuDNN")
-    parser.add_argument("--features", type=str, default="final_avg",
-                        help="Comma-separated list of blob names to fetch")
-    parser.add_argument("--num_iterations", type=int, default=-1,
-                        help="Run only this many iterations")
-    parser.add_argument("--num_decode_threads", type=int, default=4,
-                        help="")
-    parser.add_argument("--clip_length_of", type=int, default=8,
-                        help="Frames of optical flow data")
-    parser.add_argument("--sampling_rate_of", type=int, default=2,
-                        help="Sampling rate for optial flows")
-    parser.add_argument("--frame_gap_of", type=int, default=2,
-                        help="Frame gap of optical flows")
-    parser.add_argument("--input_type", type=int, default=0,
-                        help="0=rgb, 1=optical flow")
-    parser.add_argument("--flow_data_type", type=int, default=0,
-                        help="0=Flow2C, 1=Flow3C, 2=FlowWithGray, 3=FlowWithRGB")
-    parser.add_argument("--do_flow_aggregation", type=int, default=0,
-                        help="whether to aggregate optical flow across "
-                        + "multiple frames")
-    parser.add_argument("--clip_per_video", type=int, default=1,
-                        help="When clips_per_video > 1, sample this many "
-                        + "clips uniformly in time")
-    parser.add_argument("--get_video_id", type=int, default=0,
-                        help="Output video id")
-    parser.add_argument("--multi_label", type=int, default=0,
-                        help="Multiple label csv file input")
-    parser.add_argument("--sanity_check", type=int, default=0,
-                        help="Sanity check on the accuracy/auc")
-    parser.add_argument("--decode_type", type=int, default=2,
-                        help="0: random, 1: uniform sampling, "
-                        + "2: use starting frame")
-    parser.add_argument("--channel_multiplier", type=float, default=1.0,
-                        help="Channel multiplier")
-    parser.add_argument("--use_dropout", type=int, default=0,
-                        help="Use dropout at the prediction layer")
-    parser.add_argument("--save_h5", type=int, default=0,
-                        help="whether save to h5 or pickle, default to pickle")
-    parser.add_argument("--bottleneck_multiplier", type=float, default=1.0,
-                        help="Bottleneck multiplier")
-    parser.add_argument("--get_start_frame", type=int, default=0,
-                        help="Output clip start frame")
-    parser.add_argument("--use_convolutional_pred", type=int, default=0,
-                        help="using convolutional predictions")
-    parser.add_argument("--video_res_type", type=int, default=0,
-                        help="Video frame scaling option, 0: scaled by "
-                        + "height x width; 1: scaled by short edge")
-    parser.add_argument("--use_pool1", type=int, default=0,
-                        help="use pool1 layer")
-    parser.add_argument("--use_local_file", type=int, default=0,
-                        help="use local file")
-    parser.add_argument("--crop_per_clip", type=int, default=1,
-                        help="number of spatial crops per clip")
-
-    args = parser.parse_args()
-    log.info(args)
-
-    assert model_builder.model_validation(
-        args.model_name,
-        args.model_depth,
-        args.clip_length_of if args.input_type else args.clip_length_rgb,
-        args.crop_size if not args.use_convolutional_pred else 112
-    )
-
-    ExtractFeatures(args)
-
-
-if __name__ == '__main__':
-    workspace.GlobalInit(['caffe2', '--caffe2_log_level=2'])
-    main()
