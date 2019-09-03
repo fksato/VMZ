@@ -101,7 +101,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
         else:
             gpus = [i for i in range(num_gpus)]
     else:
-        gpus = [int(x) for x in gpu_list.split(',')]   
+        gpus = gpu_list
         num_gpus = len(gpus)
 
     my_arg_scope = {
