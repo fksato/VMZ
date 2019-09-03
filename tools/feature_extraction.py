@@ -265,6 +265,9 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
             examples_per_iteration = batch_size
         num_iterations = int(num_examples / examples_per_iteration)
 
+    print(f'NUM OF EXAMPLES {num_examples}')
+    print(f'BATCH {batch_size}, EXAMPLES: {examples_per_iteration}')
+
     activations = fetchActivations(model, layers, num_iterations)
 
     # saving extracted layers
