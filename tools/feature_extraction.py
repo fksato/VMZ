@@ -252,8 +252,8 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
         layers = [layers]
 
     if 'video_id' not in layers:
-        layers.append(video_id)
-        
+        layers.append('video_id')
+
     assert len(layers) > 0
 
     if num_iterations > 0:
