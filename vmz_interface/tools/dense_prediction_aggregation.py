@@ -21,9 +21,9 @@ import logging
 import numpy as np
 import os
 import argparse
-import cPickle as pickle
+import pickle
 
-import utils.metric as metric
+import vmz_interface.utils.metric as metric
 
 logging.basicConfig()
 log = logging.getLogger("dense_prediction_aggregation")

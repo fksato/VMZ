@@ -24,11 +24,11 @@ import math
 
 from caffe2.python import workspace, cnn, core
 from caffe2.python import data_parallel_model
-from models import model_builder
-from utils import model_helper
-from utils import model_loader
-from utils import metric
-from utils import reader_utils
+from vmz_interface.models import model_builder
+from vmz_interface.utils import model_helper
+from vmz_interface.utils import model_loader
+from vmz_interface.utils import metric
+from vmz_interface.utils import reader_utils
 from caffe2.proto import caffe2_pb2
 
 
