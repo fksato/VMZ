@@ -180,7 +180,7 @@ def ExtractFeatures(args):
             num_devices = 1  # default for cpu
             if num_gpus > 0:
                 num_devices = num_gpus
-            for g in range(num_devices):
+            for g in gpus:
                 for output_name in outputs:
                     blob_name = 'gpu_{}/'.format(g) + output_name
                     activations = workspace.FetchBlob(blob_name)
