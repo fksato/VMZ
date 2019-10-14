@@ -56,13 +56,13 @@ class VideoDBBuilder:
 		# make existence check:
 		if len(lmdb_metas) > 0:
 			# 
-			vid_list = set(self.video_paths)
-			creaetd_metas = set()
+			vid_list = list(set(self.video_paths))
+			created_metas = []
 			for i in range(len(lmdb_metas)):
 				with open(f'{self.clips_lmdb_data_path}/lmdb_meta_{i}.csv') as f:
 					df = pd.read_csv(f)
-				creaetd_metas.add(set(df['org_video'].values))
-			if creaetd_metas == vid_list:
+				created_metas.add(list(set(df['org_video'].values)))
+			if created_metas == vid_list:
 				self.video_lmdb_paths = glob(f'{self.clips_lmdb_data_path}/lmdb_*_db')
 			else:
 				raise Exception(f'Stimulus id {self._stim_id} does not match the videos in the LMDB')
