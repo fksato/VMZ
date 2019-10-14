@@ -61,7 +61,7 @@ class VideoDBBuilder:
 			for i in range(len(lmdb_metas)):
 				with open(f'{self.clips_lmdb_data_path}/lmdb_meta_{i}.csv') as f:
 					df = pd.read_csv(f)
-				created_metas.add(set(df['org_video'].values.flatten()))
+				created_metas.update(set(df['org_video'].unique()))
 			if created_metas == vid_list:
 				self.video_lmdb_paths = glob(f'{self.clips_lmdb_data_path}/lmdb_*_db')
 			else:
