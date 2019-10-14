@@ -44,13 +44,15 @@ class VideoDBBuilder:
 		self.gpu_batch_combo = None
 
 		self.clips_dir = f'{stimulus_id}_{self.num_frames_per_clips}_{self.clips_overlap}'
+		if not os.path.isdir(self.clips_dir):
+			os.mkdir(self.clips_dir)
 		self.clips_lmdb_data_path = f'{self._lmdb_path}/{self.clips_dir}'
 
 
 	def make_from_paths(self, stimuli_paths):
 		self.video_paths = stimuli_paths
 		self.vid_cnt = len(self.video_paths)
-		lmdb_metas = glob(f'{self.clips_lmdb_data_path}/lmdb_meta_%.csv')
+		lmdb_metas = glob(f'{self.clips_lmdb_data_path}/lmdb_meta_*.csv')
 		# make existence check:
 		if len(lmdb_metas) > 0:
 			# 
@@ -61,7 +63,7 @@ class VideoDBBuilder:
 					df = pd.read_csv(f)
 				creaetd_metas.add(set(df['org_video'].unique()))
 			if creaetd_metas == vid_list:
-				self.video_lmdb_paths = glob(f'{self.clips_lmdb_data_path}/lmdb_%_db')
+				self.video_lmdb_paths = glob(f'{self.clips_lmdb_data_path}/lmdb_*_db')
 			else:
 				raise Exception(f'Stimulus id {self._stim_id} does not match the videos in the LMDB')
 		else:
