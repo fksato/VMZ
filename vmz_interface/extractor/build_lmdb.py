@@ -82,7 +82,7 @@ class VideoDBBuilder:
 		file_starts = [int(i/num_clips) for i in db_starts]
 		
 		sub_paths = [self.video_paths[offset:offset+stride] for offset, stride in zip(file_starts, file_strides)]
-		print(sub_paths)
+		print(list(zip(file_starts, file_strides)))
 		write_data = [[[  data[i]
 						  , 0 # labels is None? hacs_action_dict[os.path.basename(os.path.dirname(data[i]))]
 						  , start_frms[clip_idx]
