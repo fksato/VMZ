@@ -78,7 +78,7 @@ class VideoDBBuilder:
 		num_clips, start_frms = self._start_frames()
 		
 		db_starts, db_strides = self._records_per_meta(num_clips)
-		file_strides = [int(i/num_clips) for i in db_strides[1:]]
+		file_strides = [int(i/num_clips) for i in db_strides]
 		file_starts = [int(i/num_clips) for i in db_starts]
 		
 		sub_paths = [self.video_paths[offset:offset+stride] for offset, stride in zip(file_starts, file_strides)]
