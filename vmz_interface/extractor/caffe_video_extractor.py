@@ -77,19 +77,21 @@ class CaffeVideoWrapper:
 		if self._data_inputs.gpu_batch_combo is None:
 			for i in self._data_inputs.video_lmdb_paths:
 				# vmz extract_features:
-				a.append(feature_extractor(self.model_name, self.model_depth, gpu_list=self._gpus
+				a.append(feature_extractor(model_name=self.model_name, model_depth=self.model_depth
+					, gpu_list=self._gpus
 					, load_model_path=self.load_model_path, test_data=i
 					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names))
 					# , **self._mdl_params))
 		else:
 			for i in self._data_inputs.video_lmdb_paths[:-1]:
 				# vmz extract_features:
-				a.append(feature_extractor(self.model_name, self.model_depth, num_gpu=self._gpus
+				a.append(feature_extractor(model_name=self.model_name, model_depth=self.model_depth
+					, num_gpu=self._gpus
 					, load_model_path=self.load_model_path, test_data=i
 					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names))
 					# , **self._mdl_params))
 
-			a.append(feature_extractor(self.model_name, self.model_depth
+			a.append(feature_extractor(model_name=self.model_name, model_depth=self.model_depth
 				, num_gpu=self._data_inputs.gpu_batch_combo[0], load_model_path=self.load_model_path
 				, test_data=i, batch_size=self._data_inputs.gpu_batch_combo[1], layers=layer_names))
 				# , **self._mdl_params))

@@ -39,7 +39,8 @@ logging.basicConfig()
 log = logging.getLogger("feature_extractor")
 log.setLevel(logging.INFO)
 
-def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_gpus=0, batch_size=4, clip_per_video=1, decode_type=2
+def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_gpus=0, batch_size=4
+                        , clip_per_video=1, decode_type=2
                         , clip_length_rgb=4, sampling_rate_rgb=1, scale_h=128, scale_w=171
                         , crop_size=112, video_res_type=0, num_decode_threads=4, multi_label=0
                         , num_labels=101, input_type=0, clip_length_of=8, sampling_rate_of=2
@@ -48,7 +49,8 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
                         , db_type='pickle' , model_name='r2plus1d', model_depth=18
                         , num_channels=3, output_path=None
                         , use_cudnn=1, layers='final_avg', num_iterations=1, channel_multiplier=1.0
-                        , bottleneck_multiplier=1.0, use_pool1=0, use_convolutional_pred=0, use_dropout=0, **kwargs):
+                        , bottleneck_multiplier=1.0, use_pool1=0, use_convolutional_pred=0
+                        , use_dropout=0, **kwargs):
     """
     :param gpu_list: list of gpu ids to use
     :param batch_size: batch size
