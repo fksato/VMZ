@@ -90,7 +90,9 @@ class VideoDBBuilder:
 						for i in range(len(data)) for clip_idx in range(num_clips)]
 						for idx, data in enumerate(sub_paths)]
 
-		self.uneven_db = file_strides[-1] == file_strides[0]
+		self.uneven_db = False
+		if len(file_strides) > 0:
+			self.uneven_db = file_strides[-1] == file_strides[0]
 		# self.units = num_clips
 		return self._write_lmdb_meta(write_data)
 
