@@ -6,7 +6,7 @@ import pickle as pk
 from glob import glob
 from math import ceil
 
-from data.create_video_db import create_video_db
+from vmz_interface.data.create_video_db import create_video_db
 
 class VideoDBBuilder:
 

@@ -24,7 +24,7 @@ logging.basicConfig()
 log = logging.getLogger("r3d_model")
 log.setLevel(logging.INFO)
 
-from lib.models.builder.video_model \
+from vmz_interface.lib.models.builder.video_model \
     import VideoModelBuilder
 
 # For more depths, add the block config here

@@ -27,11 +27,11 @@ import time
 from caffe2.python import workspace, cnn
 from caffe2.python import timeout_guard, experiment_util, data_parallel_model
 import caffe2.python.predictor.predictor_exporter as pred_exp
-import models.lib.model_builder as model_builder
-import utils.lib.model_helper as model_helper
-import utils.lib.model_loader as model_loader
-from lib.utils import reader_utils
-from lib.utils import metric
+import vmz_interface.models.lib.model_builder as model_builder
+import vmz_interface.utils.lib.model_helper as model_helper
+import vmz_interface.utils.lib.model_loader as model_loader
+from vmz_interface.lib.utils import reader_utils
+from vmz_interface.lib.utils import metric
 
 # Logger
 log = logging.getLogger("train_net")

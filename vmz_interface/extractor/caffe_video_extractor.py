@@ -1,5 +1,5 @@
-from extractor.build_lmdb import VideoDBBuilder
-from tools.feature_extraction import feature_extractor
+from vmz_interface.extractor.build_lmdb import VideoDBBuilder
+from vmz_interface.tools.feature_extraction import feature_extractor
 
 import argparse
 

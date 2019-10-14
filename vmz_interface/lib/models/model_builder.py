@@ -24,10 +24,10 @@ log = logging.getLogger("model_builder")
 log.setLevel(logging.INFO)
 
 
-from lib.models import c3d_model
-from lib.models import r3d_model
+from vmz_interface.lib.models import c3d_model
+from vmz_interface.lib.models import r3d_model
 
-from lib.models.loss import loss_creator
+from vmz_interface.lib.models.loss import loss_creator
 
 
 video_models = [
