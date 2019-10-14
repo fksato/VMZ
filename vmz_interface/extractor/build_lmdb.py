@@ -6,7 +6,7 @@ import pickle as pk
 from glob import glob
 from math import ceil
 
-from vmz_interface.data.db_video_create.py import create_video_db
+from vmz_interface.data.db_video_create import create_video_db
 
 class VideoDBBuilder:
 
@@ -89,7 +89,7 @@ class VideoDBBuilder:
 						  , num_clips*i + clip_idx + db_starts[idx]]
 						for i in range(len(data)) for clip_idx in range(num_clips)]
 						for idx, data in enumerate(sub_paths)]
-						
+
 		self.uneven_db = file_strides[-1] == file_strides[0]
 		# self.units = num_clips
 		return self._write_lmdb_meta(write_data)
