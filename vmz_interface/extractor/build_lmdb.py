@@ -44,9 +44,9 @@ class VideoDBBuilder:
 		self.gpu_batch_combo = None
 
 		self.clips_dir = f'{stimulus_id}_{self.num_frames_per_clips}_{self.clips_overlap}'
-		if not os.path.isdir(self.clips_dir):
-			os.mkdir(self.clips_dir)
 		self.clips_lmdb_data_path = f'{self._lmdb_path}/{self.clips_dir}'
+		if not os.path.isdir(self.clips_lmdb_data_path):
+			os.mkdir(self.clips_lmdb_data_path)
 
 
 	def make_from_paths(self, stimuli_paths):
