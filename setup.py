@@ -23,8 +23,8 @@ setup(
 			    ],
 	entry_points={
 				'console_scripts':[
-									'extract_features = vmz_interface.tools.extract_features:main',
-									'db_video_create = vmz_interface.data.db_video_create:main'
+									'extract_features = tools.extract_features:main',
+									'db_video_create = data.db_video_create:main'
 						          ]
 
 				}
