@@ -145,8 +145,8 @@ class VideoDBBuilder:
 
 		total_num_records = num_clips * self.vid_cnt
 		div_criteria = num_clips * self.BATCH_SIZE * self.GPU_CNT # extract_features requires number of records to divide evenly
-		# start with 4 files:
-		num_files = 4
+		# start with 1 files:
+		num_files = 1
 		# files_rem = int(total_num_records%num_files)
 		records_per_file = int(total_num_records/num_files)
 		
