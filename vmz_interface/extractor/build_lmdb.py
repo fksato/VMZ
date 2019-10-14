@@ -35,7 +35,6 @@ class VideoDBBuilder:
 		self.fpv = fpv
 		self.video_start_offset = video_strt_offset
 		self.clips_overlap = clips_overlap
-		self.vid_cnt = len(self.video_paths)
 		self.list_lmdb_meta = []
 
 		self.units = 1
@@ -50,6 +49,7 @@ class VideoDBBuilder:
 
 	def make_from_paths(self, stimuli_paths):
 		self.video_paths = stimuli_paths
+		self.vid_cnt = len(self.video_paths)
 		lmdb_metas = glob(f'{self.clips_lmdb_data_path}/lmdb_meta_%.csv')
 		# make existence check:
 		if len(lmdb_metas) > 0:
