@@ -63,7 +63,7 @@ class CaffeVideoWrapper:
 		self.load_model_path = load_model_path
 		self.model_name = model_name
 		self.model_depth = model_depth
-		self._mdl_params = kwargs
+		# self._mdl_params = kwargs
 
 	def __call__(self, layers, stimulus_paths):
 		self._data_inputs.make_from_paths(stimulus_paths)
@@ -79,19 +79,19 @@ class CaffeVideoWrapper:
 				# vmz extract_features:
 				a.append(feature_extractor(self.model_name, self.model_depth, gpu_list=self._gpus
 					, load_model_path=self.load_model_path, test_data=i
-					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names
-					, **self._mdl_params))
+					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names))
+					# , **self._mdl_params))
 		else:
 			for i in self._data_inputs.video_lmdb_paths[:-1]:
 				# vmz extract_features:
 				a.append(feature_extractor(self.model_name, self.model_depth, num_gpu=self._gpus
 					, load_model_path=self.load_model_path, test_data=i
-					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names
-					, **self._mdl_params))
+					, batch_size=self._data_inputs.BATCH_SIZE, layers=layer_names))
+					# , **self._mdl_params))
 
 			a.append(feature_extractor(self.model_name, self.model_depth
 				, num_gpu=self._data_inputs.gpu_batch_combo[0], load_model_path=self.load_model_path
-				, test_data=i, batch_size=self._data_inputs.gpu_batch_combo[1], layers=layer_names
-				, **self._mdl_params))
+				, test_data=i, batch_size=self._data_inputs.gpu_batch_combo[1], layers=layer_names))
+				# , **self._mdl_params))
 
 		return a
