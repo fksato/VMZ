@@ -1,4 +1,3 @@
-from vmz_interface.extractor.build_lmdb import VideoDBBuilder
 from vmz_interface.tools.feature_extraction import feature_extractor
 
 import argparse
@@ -38,7 +37,8 @@ class DefaultVideoArgs:
 
 class CaffeVideoWrapper:
 
-	def __init__(self, model_name, model_depth, load_model_path, batch_size, **kwargs):
+	def __init__(self, model_name, model_depth, load_model_path, batch_size
+				, data_inputs, **kwargs):
 		"""
 		kwargs:
 		clip_per_video=DefaultVideoArgs.clip_per_video, decode_type=DefaultVideoArgs.decode_type
@@ -58,7 +58,7 @@ class CaffeVideoWrapper:
 		, use_convolutional_pred=DefaultVideoArgs.use_convolutional_pred, use_dropout=DefaultVideoArgs.use_dropout
 		"""
 
-		self._data_inputs = VideoDBBuilder(batch_size, **kwargs)
+		self._data_inputs = data_inputs
 		self._gpus = [i for i in range(self._data_inputs.GPU_CNT)]
 		self.load_model_path = load_model_path
 		self.model_name = model_name
@@ -67,7 +67,7 @@ class CaffeVideoWrapper:
 
 	def __call__(self, layers, stimulus_paths):
 		self._data_inputs.make_from_paths(stimulus_paths)
-		self._get_activations(layers)
+		return self._get_activations(layers)
 
 
 	def _get_activations(self, layer_names):
