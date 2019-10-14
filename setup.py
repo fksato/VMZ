@@ -21,11 +21,11 @@ setup(
 			        'Programming Language :: Python :: 3.6',
 			        'Programming Language :: Python :: 3.7',
 			    ],
-	entry_points={
-				'console_scripts':[
-									'extract_features = tools.extract_features:main',
-									'db_video_create = data.db_video_create:main'
-						          ]
+	# entry_points={
+	# 			'console_scripts':[
+	# 								'extract_features = tools.extract_features:main',
+	# 								'db_video_create = data.db_video_create:main'
+	# 					          ]
 
-				}
+	# 			}
 )
