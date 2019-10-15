@@ -185,7 +185,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
             use_convolutional_pred=use_convolutional_pred,
             use_pool1=use_pool1,
         )
-
+    ##
     if num_gpus > 0:
         data_parallel_model.Parallelize_GPU(
             model,
@@ -223,7 +223,7 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
         log.warning("Unsupported db_type: {}".format(db_type))
 
     data_parallel_model.FinalizeAfterCheckpoint(model)
-
+    ##
     def fetchActivations(model, outputs, num_iterations):
 
         all_activations = {}
@@ -249,7 +249,6 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
 
         return all_activations
 
-    # outputs = [name.strip() for name in layers.split(',')]
     if not isinstance(layers, list):
         layers = [layers]
 
@@ -258,17 +257,8 @@ def feature_extractor(load_model_path=None, test_data=None, gpu_list=None, num_g
 
     assert len(layers) > 0
 
-    # if num_iterations > 0:
-    #     num_iterations = num_iterations
-    # else:
-        # if num_gpus > 0:
-        # else:
-        #     examples_per_iteration = batch_size
     examples_per_iteration = batch_size * num_gpus
     num_iterations = int(num_examples / examples_per_iteration)
-
-    print(f'NUM OF EXAMPLES {num_examples}')
-    print(f'BATCH {batch_size}, EXAMPLES: {examples_per_iteration}')
 
     activations = fetchActivations(model, layers, num_iterations)
 

@@ -10,9 +10,9 @@ from vmz_interface.data.db_video_create import create_video_db
 
 class VideoDBBuilder:
 
-	def __init__(self, stimulus_id, lmdb_path, temporal_depth, fpv=75, video_strt_offset=15, clips_overlap=0
-					 , batch_size=4, gpu_count=2, max_num_records=6e4, min_records_factor=1, allow_mkdir=False
-					 , *args, **kwargs):
+	def __init__(self, stimulus_id, lmdb_path, temporal_depth, fpv=75, video_strt_offset=15
+				, clips_overlap=0, batch_size=4, gpu_count=2, max_num_records=6e4, min_records_factor=1
+				, allow_mkdir=False, *args, **kwargs):
 		
 		if not os.path.isdir(lmdb_path):
 			if allow_mkdir:
@@ -45,8 +45,12 @@ class VideoDBBuilder:
 
 		self.clips_dir = f'{stimulus_id}_{self.num_frames_per_clips}_{self.clips_overlap}'
 		self.clips_lmdb_data_path = f'{self._lmdb_path}/{self.clips_dir}'
+
 		if not os.path.isdir(self.clips_lmdb_data_path):
-			os.mkdir(self.clips_lmdb_data_path)
+			if allow_mkdir:
+				os.mkdir(self.clips_lmdb_data_path)
+			else:
+				raise Exception(f'please make sure {self.clips_lmdb_data_path} is a valid directory')
 
 
 	def make_from_paths(self, stimuli_paths):
@@ -159,7 +163,7 @@ class VideoDBBuilder:
 		rem_per_file = int(records_per_file % div_criteria)
 		records_per_file = records_per_file - rem_per_file
 		
-		file_starts = [int(records_per_file*i) for i in range(0,num_files+1)]
+		file_starts = [int(records_per_file*i) for i in range(0,num_files)]
 		file_strides = [int(records_per_file) for i in range(num_files)]
 		
 		rem_total = total_num_records - num_files * records_per_file
